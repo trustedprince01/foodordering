@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Menu{% endblock %}
+
+{% block content %}
+<h2 class="text-center">Our Menu</h2>
+
+<!-- 🔹 SEARCH & FILTER FORM -->
+<form method="GET" class="d-flex mb-4">
+    <input type="text" name="q" class="form-control" placeholder="Search food..." value="{{ request.GET.q }}">
+    
+    <select name="food_type" class="form-select mx-2">
+        <option value="">All</option>
+        <option value="Veg" {% if request.GET.food_type == "Veg" %}selected{% endif %}>Veg</option>
+        <option value="Non-Veg" {% if request.GET.food_type == "Non-Veg" %}selected{% endif %}>Non-Veg</option>
+    </select>
+
+    <button type="submit" class="btn btn-primary">Search</button>
+</form>
+
+<!-- 🔹 FOOD ITEMS -->
+<div class="row row-cols-1 row-cols-md-3 g-4">  <!-- 🛠 Bootstrap Grid for alignment -->
+    {% for food in foods %}
+    <div class="col">
+        <div class="card shadow-sm h-100">  <!-- 🛠 h-100 makes all cards same height -->
+            <img src="{{ food.image.url }}" class="card-img-top fixed-image" alt="{{ food.name }}" 
+                 onerror="this.src='/static/images/default_food.jpg'">
+            <div class="card-body text-center">
+                <h5 class="card-title">{{ food.name }}</h5>
+                <p class="text-muted">{{ food.description }}</p>
+                <p class="fw-bold text-danger">${{ food.price }}</p>
+                
+                <!-- ⭐ Display Reviews -->
+                <p class="text-muted">
+                    ⭐ Average Rating: 
+                    {% if food.reviews.all %}
+                        {{ food.reviews.all|length }} reviews - 
+                        {{ food.reviews.aggregate_avg.rating|default:"No ratings yet" }} ⭐
+                    {% else %}
+                        No reviews yet
+                    {% endif %}
+                </p>
+
+                <a href="{% url 'order_food' food.id %}" class="btn btn-success">Order Now</a>
+                <a href="{% url 'submit_review' food.id %}" class="btn btn-outline-primary btn-sm">Write a Review</a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <p class="text-center">No food items found.</p>
+    {% endfor %}
+</div>
+{% endblock %}

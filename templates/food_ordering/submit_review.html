@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}Submit Review{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2 class="text-center">Review for {{ food.name }}</h2>
+    
+    <form method="POST" class="card p-4 shadow-sm mx-auto" style="max-width: 500px;">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary w-100">Submit Review</button>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block title %}Payment Successful{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-center">
+    <div class="card p-4 shadow-sm text-center" style="max-width: 400px; width: 100%;">
+        <h2 class="text-success">Payment Successful!</h2>
+        <p>Thank you for your order. Your payment reference is: <strong>{{ reference }}</strong></p>
+        <a href="{% url 'order_history' %}" class="btn btn-primary">View Order History</a>
+    </div>
+</div>
+{% endblock %}
