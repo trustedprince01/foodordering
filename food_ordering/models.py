@@ -3,22 +3,21 @@ from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.conf import settings
 
-
 class Food(models.Model):
-    FOOD_TYPES = [
-        ("Veg", "Vegetarian"),
-        ("Non-Veg", "Non-Vegetarian"),
-    ]
-    
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=100)
     description = models.TextField()
-    price = models.DecimalField(max_digits=10, decimal_places=2)
-    image = models.ImageField(upload_to="food_images/")
-    food_type = models.CharField(max_length=10, choices=FOOD_TYPES, default="Veg")  # ✅ Add this
+    price = models.DecimalField(max_digits=6, decimal_places=2)
+    category = models.CharField(  # ✅ Ensure this exists
+        max_length=50,
+        choices=[("Veg", "Veg"), ("Non-Veg", "Non-Veg")],
+        default="Veg"
+    )
+    available = models.BooleanField(default=True)  
+    image = models.ImageField(upload_to="food_images/", blank=True, null=True)
 
     def __str__(self):
         return self.name
-
+    
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     full_name = models.CharField(max_length=100, blank=True, null=True)  # ✅ Add this if missing
