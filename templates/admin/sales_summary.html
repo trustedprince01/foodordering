@@ -1,0 +1,10 @@
+{% extends "admin/change_list.html" %}
+
+{% block content %}
+<div style="padding: 20px;">
+    <h2>📊 Sales Summary</h2>
+    <p><strong>Total Orders:</strong> {{ total_orders }}</p>
+    <p><strong>Total Revenue:</strong> {{ total_revenue }}</p>
+</div>
+{{ block.super }}
+{% endblock %}

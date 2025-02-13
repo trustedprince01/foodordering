@@ -15,6 +15,7 @@ from django.contrib import messages
 from django.shortcuts import redirect
 from decouple import config
 import os
+import dj_database_url
 
 
 
@@ -31,8 +32,7 @@ SECRET_KEY = 'django-insecure-9zkexpg)%iy@z87z9aah@@^d81@y4*8$!+$#kj_)40qmkp@bp#
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ['your-render-url.onrender.com', 'localhost', '127.0.0.1',]
 
 # Application definition
 
@@ -55,6 +55,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    
 ]
 
 ROOT_URLCONF = 'OnlineFoodOrderingSystem.urls'
@@ -82,10 +83,7 @@ WSGI_APPLICATION = 'OnlineFoodOrderingSystem.wsgi.application'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.config(default='sqlite:///db.sqlite3')  # Change this on Render
 }
 
 def admin_login_redirect(get_response):
@@ -122,22 +120,34 @@ AUTH_PASSWORD_VALIDATORS = [
 
 PAYSTACK_PUBLIC_KEY = "pk_test_f328575f8f9f690f5ed43786a9c5c456c277719b"
 PAYSTACK_SECRET_KEY = "sk_test_a380dda6a29099c572c9a3c5034425240036c5ee"
+PAYSTACK_VERIFY_URL = "https://api.paystack.co/transaction/verify/"
+
+
 
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = config("EMAIL_HOST", default="smtp.gmail.com")
-EMAIL_PORT = config("EMAIL_PORT", default=587, cast=int)
-EMAIL_HOST_USER = config("EMAIL_HOST_USER", default="chibuzorprince68@gmail.com")
-EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD", default="wflk gjiq vair nlra")  # Use App Password
-EMAIL_USE_TLS = config("EMAIL_USE_TLS", default=True, cast=bool)
-EMAIL_USE_SSL = config("EMAIL_USE_SSL", default=False, cast=bool)
+EMAIL_HOST = "smtp.office365.com"
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = "your_email@outlook.com"  # Replace with your Outlook email
+EMAIL_HOST_PASSWORD = "your_password"  # Your Outlook email password
+
+
+
+#EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+#EMAIL_HOST = config("EMAIL_HOST", default="smtp.gmail.com")
+#EMAIL_PORT = config("EMAIL_PORT", default=587, cast=int)
+#EMAIL_HOST_USER = config("EMAIL_HOST_USER", default="chibuzorprince68@gmail.com")
+#EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD", default="wflk gjiq vair nlra")  # Use App Password
+#EMAIL_USE_TLS = config("EMAIL_USE_TLS", default=True, cast=bool)
+#EMAIL_USE_SSL = config("EMAIL_USE_SSL", default=False, cast=bool)
 
 # Admin email notifications
-ADMIN_USER_NAME = config("ADMIN_USER_NAME", default="Admin User")
-ADMIN_USER_EMAIL = config("ADMIN_USER_EMAIL", default="admin@example.com")
+#ADMIN_USER_NAME = config("ADMIN_USER_NAME", default="Admin User")
+#ADMIN_USER_EMAIL = config("ADMIN_USER_EMAIL", default="admin@example.com")
 
-ADMINS = [(ADMIN_USER_NAME, ADMIN_USER_EMAIL)]
-MANAGERS = ADMINS
+#ADMINS = [(ADMIN_USER_NAME, ADMIN_USER_EMAIL)]
+#MANAGERS = ADMINS
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/

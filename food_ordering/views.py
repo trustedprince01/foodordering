@@ -1,103 +1,66 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from .models import Food, Order
-from django.contrib.auth import login, logout
-from django.contrib.auth.forms import AuthenticationForm
-from .forms import RegisterForm, ReviewForm
+from django.contrib.auth import login, logout, authenticate, update_session_auth_hash
+from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
 from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
 from django.conf import settings
 from django.core.mail import send_mail
 from django.http import JsonResponse
-import requests  
 from django.db.models import Avg, Count
-from .models import Review
-from .forms import ReviewForm
-from .models import Food, Review
-from django.contrib.auth.forms import PasswordChangeForm
-from django.contrib.auth import update_session_auth_hash
-from django.shortcuts import render, redirect
-from django.contrib.auth.forms import PasswordChangeForm
-from .models import UserProfile
-from .forms import UserProfileForm
-from .forms import ProfileUpdateForm, PasswordChangeForm
+import requests
+from .models import Food, Order, Review, UserProfile
+from .forms import RegisterForm, ReviewForm, UserProfileForm, ProfileUpdateForm
 
 
 @login_required
 def cancel_order(request, order_id):
     order = get_object_or_404(Order, id=order_id, user=request.user)
-
-    if order.status != "Completed":  # Ensure completed orders cannot be canceled
+    if order.status != "Completed":
         order.status = "Cancelled"
         order.save()
-        
         messages.success(request, "Your order has been cancelled.")
     else:
         messages.error(request, "Completed orders cannot be cancelled.")
-
     return redirect("order_history")
 
 @login_required
 def payment_success(request):
     reference = request.GET.get("reference", "")
 
-    print("🔹 Payment success function called!")  
-    print("🔹 Reference:", reference)  
+    if not reference:
+        messages.error(request, "No payment reference provided.")
+        return redirect("menu")
 
     # ✅ Verify payment with Paystack
     headers = {"Authorization": f"Bearer {settings.PAYSTACK_SECRET_KEY}"}
-    response = requests.get(f"https://api.paystack.co/transaction/verify/{reference}", headers=headers)
+    response = requests.get(f"{settings.PAYSTACK_VERIFY_URL}{reference}", headers=headers)
     result = response.json()
 
-    print("🔹 Paystack response:", result)  
-
-    if result["status"] and result["data"]["status"] == "success":
-        print("✅ Payment verified successfully!")  
-
-        # ✅ Retrieve food ID and quantity from session
-        food_id = request.session.get("food_id", None)
+    if result.get("status") and result["data"]["status"] == "success":
+        # ✅ Payment verified, process order
+        food_id = request.session.get("food_id")
         quantity = request.session.get("quantity", 1)
 
-        # ✅ Debugging print statements
-        print("🔹 Food ID from session:", food_id)
-        print("🔹 Quantity from session:", quantity)
-
         if not food_id:
-            messages.error(request, "Payment verified but no food order found.")
+            messages.error(request, "Payment successful but no food order found.")
             return redirect("menu")
 
-        # ✅ Convert food_id and quantity to integer before using them
-        food_id = int(food_id)
-        quantity = int(quantity)
+        food = get_object_or_404(Food, id=int(food_id))
 
-        food = get_object_or_404(Food, id=food_id)
+        Order.objects.create(user=request.user, food=food, quantity=int(quantity), status="Pending")
 
-        if not request.user.is_authenticated:
-            messages.error(request, "You need to be logged in to complete your order.")
-            return redirect("login")
-
-        print("🔹 User authenticated:", request.user)
-
-        # ✅ Save the order in the database now that payment is confirmed
-        order = Order.objects.create(
-            user=request.user,
-            food=food,
-            quantity=quantity,
-            status="Pending"
-        )
-
-        # ✅ Remove session data to prevent duplicate orders
+        # ✅ Clear session to prevent duplicate orders
         request.session.pop("food_id", None)
         request.session.pop("quantity", None)
 
-        print("✅ Order saved after payment:", order)
-
+        messages.success(request, f"✅ Payment successful! Order for {food.name} placed.")
         return redirect("order_history")
 
     else:
-        print("❌ Payment verification failed!")  
-        messages.error(request, "Payment verification failed. Please try again.")
+        messages.error(request, "❌ Payment verification failed. Please try again.")
         return redirect("menu")
+
 
 @login_required
 def fetch_order_status(request):
@@ -113,52 +76,37 @@ def update_order_status(request, order_id, status):
     order = get_object_or_404(Order, id=order_id)
     order.status = status
     order.save()
-    return JsonResponse({"message": "Order status updated successfully!"})
+    
+    messages.success(request, f"✅ Order #{order.id} marked as {status}!")
+    return redirect("manage_orders")  # ✅ Redirect to the Manage Orders page
 
 def menu(request):
     query = request.GET.get("q", "")
     food_type = request.GET.get("food_type", "")
-
     foods = Food.objects.all()
 
     if query:
         foods = foods.filter(name__icontains=query)
-
     if food_type:
-        foods = foods.filter(food_type=food_type)
+        foods = foods.filter(category=food_type)
 
-    # ✅ Annotate each food with average rating & review count
     foods = foods.annotate(avg_rating=Avg("reviews__rating"), review_count=Count("reviews"))
-
     return render(request, 'food_ordering/menu.html', {'foods': foods})
-
 
 @login_required
 def order_history(request):
-    orders = Order.objects.filter(user=request.user).order_by('-ordered_at')  # Show all orders
+    orders = Order.objects.filter(user=request.user).order_by('-ordered_at')
     return render(request, 'food_ordering/order_history.html', {'orders': orders})
 
 @login_required
 def order_food(request, food_id):
     food = get_object_or_404(Food, id=food_id)
-
     if request.method == "POST":
         quantity = int(request.POST.get("quantity", 1))
-
-        # ✅ Save the order immediately (NO PAYSTACK)
-        order = Order.objects.create(
-            user=request.user,
-            food=food,
-            quantity=quantity,
-            status="Pending"  # Order starts as "Pending"
-        )
-
-        print("✅ Order created successfully:", order)  # Debugging
-
-        return redirect("order_history")  # ✅ Redirect to order history immediately
-
-    return render(request, "food_ordering/checkout.html", {"food": food})
-
+        Order.objects.create(user=request.user, food=food, quantity=quantity)
+        messages.success(request, f"Your order for {food.name} has been placed!")
+        return redirect("order_history")
+    return render(request, "food_ordering/order_food.html", {"food": food})
 
 def home(request):
     return render(request, 'food_ordering/home.html')
@@ -168,8 +116,8 @@ def register(request):
         form = RegisterForm(request.POST)
         if form.is_valid():
             user = form.save()
-            login(request, user)  # Automatically log in after signup
-            return redirect("home")  # Redirect to homepage
+            login(request, user)
+            return redirect("home")
     else:
         form = RegisterForm()
     return render(request, "food_ordering/register.html", {"form": form})
@@ -205,7 +153,6 @@ def send_order_email(user, order):
 @login_required
 def user_profile(request):
     user_profile, created = UserProfile.objects.get_or_create(user=request.user)
-
     if request.method == "POST":
         if "update_profile" in request.POST:
             profile_form = ProfileUpdateForm(request.POST, request.FILES, instance=user_profile)
@@ -213,7 +160,6 @@ def user_profile(request):
                 profile_form.save()
                 messages.success(request, "Profile updated successfully.")
                 return redirect("user_profile")
-
         if "update_password" in request.POST:
             password_form = PasswordChangeForm(request.user, request.POST)
             if password_form.is_valid():
@@ -221,11 +167,9 @@ def user_profile(request):
                 update_session_auth_hash(request, user)
                 messages.success(request, "Password updated successfully.")
                 return redirect("user_profile")
-
     else:
         profile_form = ProfileUpdateForm(instance=user_profile)
         password_form = PasswordChangeForm(request.user)
-
     return render(request, "food_ordering/profile.html", {
         "profile_form": profile_form,
         "password_form": password_form
@@ -236,13 +180,11 @@ def manage_orders(request):
     orders = Order.objects.all().order_by("-ordered_at")  # Show newest orders first
     return render(request, "food_ordering/manage_orders.html", {"orders": orders})
 
+
 @login_required
 def submit_review(request, food_id):
     food = get_object_or_404(Food, id=food_id)
-    
-    # Prevent duplicate reviews
     existing_review = Review.objects.filter(user=request.user, food=food).first()
-    
     if request.method == "POST":
         form = ReviewForm(request.POST, instance=existing_review)
         if form.is_valid():
@@ -254,9 +196,7 @@ def submit_review(request, food_id):
             return redirect("menu")
     else:
         form = ReviewForm(instance=existing_review)
-
     return render(request, "food_ordering/review_form.html", {"form": form, "food": food})
-
 
 @login_required
 def update_profile_picture(request):
@@ -265,5 +205,57 @@ def update_profile_picture(request):
         user_profile.profile_picture = request.FILES["profile_picture"]
         user_profile.save()
         return JsonResponse({"success": True})
-    
     return JsonResponse({"success": False, "error": "No image uploaded"})
+
+def login_user(request):  # ✅ Make sure this exists in views.py
+    if request.method == "POST":
+        username = request.POST["username"]
+        password = request.POST["password"]
+        user = authenticate(request, username=username, password=password)
+
+        if user is not None:
+            login(request, user)
+            messages.success(request, "✅ Logged in successfully!")
+            return redirect("menu")
+        else:
+            messages.error(request, "❌ Invalid username or password!")
+            return redirect("login")
+
+    return render(request, "food_ordering/login.html")
+
+
+@login_required
+def checkout(request, food_id):
+    food = get_object_or_404(Food, id=food_id)
+
+    if request.method == "POST":
+        quantity = int(request.POST.get("quantity", 1))
+        total_price = food.price * quantity
+
+        # ✅ Store food & quantity in session before payment
+        request.session["food_id"] = food.id
+        request.session["quantity"] = quantity
+
+        # ✅ Paystack API request to initialize transaction
+        headers = {
+            "Authorization": f"Bearer {settings.PAYSTACK_SECRET_KEY}",
+            "Content-Type": "application/json",
+        }
+        data = {
+            "email": request.user.email,
+            "amount": int(total_price * 100),  # Convert to kobo (Paystack requires amounts in kobo)
+            "currency": "NGN",
+            "callback_url": request.build_absolute_uri("/payment-success/"),
+        }
+
+        response = requests.post("https://api.paystack.co/transaction/initialize", json=data, headers=headers)
+        response_data = response.json()
+
+        if response_data.get("status"):
+            # ✅ Redirect to Paystack payment page
+            return redirect(response_data["data"]["authorization_url"])
+        else:
+            # ❌ Payment initialization failed
+            return render(request, "food_ordering/checkout.html", {"food": food, "error": "Payment failed. Try again."})
+
+    return render(request, "food_ordering/checkout.html", {"food": food})

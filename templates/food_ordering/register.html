@@ -1,26 +1,88 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}Register{% endblock %}
 
 {% block content %}
 <div class="d-flex justify-content-center">
     <div class="card p-4 shadow-sm" style="max-width: 400px; width: 100%;">
-        <h2 class="text-center">Register</h2>
+        <h2 class="text-center">📝 Create an Account</h2>
 
+        <!-- 🔹 Show Messages -->
         {% if messages %}
             {% for message in messages %}
-                <div class="alert alert-info text-center">
+                <div class="alert alert-danger text-center">
                     {{ message }}
                 </div>
             {% endfor %}
         {% endif %}
 
-        <form method="post">
+        <!-- 🔹 Registration Form -->
+        <form method="post" id="registerForm">
             {% csrf_token %}
-            {{ form.as_p }}
+            
+            <!-- 🔹 Username Field -->
+            <div class="mb-3">
+                <label class="form-label">Username</label>
+                <input type="text" name="username" class="form-control" placeholder="Enter username" required>
+            </div>
+
+            <!-- 🔹 Email Field -->
+            <div class="mb-3">
+                <label class="form-label">Email</label>
+                <input type="email" name="email" class="form-control" placeholder="Enter email" required>
+            </div>
+
+            <!-- 🔹 Password Field with Eye Icon -->
+            <div class="mb-3 position-relative">
+                <label class="form-label">Password</label>
+                <input type="password" name="password1" id="password" class="form-control" placeholder="Create password" required>
+                <span class="toggle-password" onclick="togglePassword()">
+                    <img src="{% static 'images/eye-icon.png' %}" alt="Show" width="20">
+                </span>
+                <div id="password-error" class="text-danger mt-1"></div>
+            </div>
+
+            <!-- 🔹 Confirm Password Field -->
+            <div class="mb-3">
+                <label class="form-label">Confirm Password</label>
+                <input type="password" name="password2" id="confirmPassword" class="form-control" placeholder="Confirm password" required>
+                <div id="confirm-password-error" class="text-danger mt-1"></div>
+            </div>
+
             <button type="submit" class="btn btn-primary w-100 mt-2">Register</button>
         </form>
+
         <p class="text-center mt-3">Already have an account? <a href="{% url 'login' %}">Login</a></p>
     </div>
 </div>
+
+<!-- 🔹 Password Validation Script -->
+<script>
+    function togglePassword() {
+        let passwordInput = document.getElementById("password");
+        passwordInput.type = passwordInput.type === "password" ? "text" : "password";
+    }
+
+    document.getElementById("registerForm").addEventListener("submit", function(event) {
+        let password = document.getElementById("password").value;
+        let confirmPassword = document.getElementById("confirmPassword").value;
+        let passwordError = document.getElementById("password-error");
+        let confirmPasswordError = document.getElementById("confirm-password-error");
+
+        passwordError.innerText = "";
+        confirmPasswordError.innerText = "";
+
+        if (password.length < 8) {
+            passwordError.innerText = "❌ Password must be at least 8 characters.";
+            event.preventDefault();
+        }
+
+        if (password !== confirmPassword) {
+            confirmPasswordError.innerText = "❌ Passwords do not match.";
+            event.preventDefault();
+        }
+    });
+</script>
+
 {% endblock %}

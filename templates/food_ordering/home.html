@@ -1,8 +1,72 @@
 {% extends "base.html" %}
+{% load static %}
 
-{% block title %}Home{% endblock %}
+{% block title %}Welcome | Online Food Ordering{% endblock %}
 
 {% block content %}
-<h1>Welcome to Online Food Ordering</h1>
-<p>Browse restaurants, order your favorite dishes, and enjoy!</p>
+
+
+<!-- 🔥 Hero Section -->
+<header class="hero-section text-center">
+    <div class="overlay">
+        <h1 class="display-4 text-white">Delicious Meals, Delivered Fast! 🍕🍔</h1>
+        <p class="text-white">Order from your favorite restaurants & get it delivered to your doorstep.</p>
+        <a href="{% url 'menu' %}" class="btn btn-lg btn-warning">📜 View Menu</a>
+    </div>
+</header>
+
+<!-- 🔥 Sidebar + Content -->
+<div class="container mt-5">
+    <div class="row">
+        
+        <!-- 🟡 Sidebar -->
+        <aside class="col-md-3">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="{% url 'menu' %}" class="text-dark">📜 View Menu</a></li>
+                        <li><a href="{% url 'order_history' %}" class="text-dark">📦 Order History</a></li>
+                        <li><a href="{% url 'user_profile' %}" class="text-dark">👤 My Profile</a></li>
+                        <li><a href="{% url 'register' %}" class="text-dark">📝 Sign Up</a></li>
+                    </ul>
+                </div>
+            </div>
+        </aside>
+
+        <!-- 🟢 Main Content -->
+        <section class="col-md-9">
+            <h2 class="text-center">🍽️ Popular Dishes</h2>
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+                {% for food in foods %}
+                <div class="col">
+                    <div class="card shadow-sm h-100">
+                        <img src="{% static 'images/banner.png' %}" class="card-img-top fixed-image" alt="{{ food.name }}" 
+                            onerror="this.src='{% static 'images/default_food.jpg' %}'">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">{{ food.name }}</h5>
+                            <p class="fw-bold text-danger">${{ food.price }}</p>
+                            <a href="{% url 'order_food' food.id %}" class="btn btn-success">Order Now</a>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <p class="text-center">No popular dishes found.</p>
+                {% endfor %}
+            </div>
+        </section>
+    </div>
+</div>
+
+<!-- 🔥 Newsletter Form -->
+<section class="newsletter-section text-center mt-5">
+    <h3>📩 Subscribe for Exclusive Offers</h3>
+    <p>Get updates on the best deals and new arrivals!</p>
+    <form method="POST" class="d-flex justify-content-center">
+        {% csrf_token %}
+        <input type="email" name="email" class="form-control w-25 me-2" placeholder="Enter your email" required>
+        <button type="submit" class="btn btn-primary">Subscribe</button>
+    </form>
+</section>
+
 {% endblock %}

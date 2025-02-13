@@ -1,65 +1,46 @@
 {% extends "base.html" %}
-
 {% block title %}Manage Orders{% endblock %}
 
 {% block content %}
-<div class="container">
-    <h2 class="text-center my-4">Manage Orders</h2>
+<h2 class="text-center">Manage Orders</h2>
 
-    <table class="table table-hover shadow-sm">
-        <thead class="table-dark">
-            <tr>
-                <th>Customer</th>
-                <th>Food Item</th>
-                <th>Quantity</th>
-                <th>Price</th>
-                <th>Status</th>
-                <th>Update Status</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for order in orders %}
-            <tr id="order-{{ order.id }}">
-                <td>{{ order.user.username }}</td>
-                <td>{{ order.food.name }}</td>
-                <td>{{ order.quantity }}</td>
-                <td class="fw-bold text-danger">${{ order.total_price }}</td>
-                <td>
-                    <span class="badge 
-                        {% if order.status == 'Pending' %}bg-warning
-                        {% elif order.status == 'In Progress' %}bg-info
-                        {% elif order.status == 'Completed' %}bg-success
-                        {% elif order.status == 'Cancelled' %}bg-danger
-                        {% endif %} status-badge">
-                        {{ order.status }}
-                    </span>
-                </td>
-                <td>
-                    {% if order.status == "Pending" %}
-                        <button onclick="updateOrderStatus({{ order.id }}, 'In Progress')" class="btn btn-primary btn-sm">Mark In Progress</button>
-                    {% elif order.status == "In Progress" %}
-                        <button onclick="updateOrderStatus({{ order.id }}, 'Completed')" class="btn btn-success btn-sm">Mark Completed</button>
-                    {% endif %}
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
-
-<script>
-    function updateOrderStatus(orderId, newStatus) {
-        fetch(`/update-order-status/${orderId}/${newStatus}/`, {
-            method: "GET",
-            headers: { "X-Requested-With": "XMLHttpRequest" }
-        })
-        .then(response => response.json())
-        .then(data => {
-            alert(data.message);
-            location.reload();  // Refresh the page
-        })
-        .catch(error => console.error("Error updating order status:", error));
-    }
-</script>
-
+<table class="table table-striped shadow-sm">
+    <thead class="table-dark">
+        <tr>
+            <th>User</th>
+            <th>Food Item</th>
+            <th>Quantity</th>
+            <th>Total Price</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for order in orders %}
+        <tr>
+            <td>{{ order.user.username }}</td>
+            <td>{{ order.food.name }}</td>
+            <td>{{ order.quantity }}</td>
+            <td class="fw-bold">${{ order.total_price }}</td>
+            <td>
+                <span class="badge 
+                    {% if order.status == 'Pending' %}bg-warning
+                    {% elif order.status == 'In Progress' %}bg-info
+                    {% elif order.status == 'Completed' %}bg-success
+                    {% elif order.status == 'Cancelled' %}bg-danger
+                    {% endif %}">
+                    {{ order.status }}
+                </span>
+            </td>
+            <td>
+                <a href="{% url 'update_order_status' order.id 'In Progress' %}" class="btn btn-primary btn-sm">In Progress</a>
+                <a href="{% url 'update_order_status' order.id 'Completed' %}" class="btn btn-success btn-sm">Complete</a>
+                <a href="{% url 'cancel_order' order.id %}" class="btn btn-danger btn-sm">Cancel</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6" class="text-center">No orders found.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
 {% endblock %}

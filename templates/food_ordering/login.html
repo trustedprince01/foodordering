@@ -1,26 +1,56 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}Login{% endblock %}
 
 {% block content %}
 <div class="d-flex justify-content-center">
     <div class="card p-4 shadow-sm" style="max-width: 400px; width: 100%;">
-        <h2 class="text-center">Login</h2>
+        <h2 class="text-center">🔑 Login</h2>
 
         {% if messages %}
             {% for message in messages %}
-                <div class="alert alert-info text-center">
-                    {{ message }}
-                </div>
+                <div class="alert alert-danger text-center">{{ message }}</div>
             {% endfor %}
         {% endif %}
 
         <form method="post">
             {% csrf_token %}
-            {{ form.as_p }}
+            
+            <div class="mb-3">
+                <label class="form-label">Username</label>
+                <input type="text" name="username" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Password</label>
+                <div class="input-group">
+                    <input type="password" name="password" id="password" class="form-control" required>
+                    <button class="btn btn-outline-secondary" type="button" onclick="togglePassword()">
+                        👁️
+                    </button>
+                </div>
+                <small class="text-danger d-none" id="passwordError">⚠️ Password must be at least 6 characters!</small>
+            </div>
+
             <button type="submit" class="btn btn-success w-100 mt-2">Login</button>
         </form>
-        <p class="text-center mt-3">Don't have an account? <a href="{% url 'register' %}">Register</a></p>
+
+        <p class="text-center mt-3">
+            Don't have an account? <a href="{% url 'register' %}">Register</a>
+        </p>
     </div>
 </div>
+
+<script>
+    function togglePassword() {
+        let passwordField = document.getElementById("password");
+        passwordField.type = passwordField.type === "password" ? "text" : "password";
+    }
+
+    document.getElementById("password").addEventListener("input", function() {
+        let passwordError = document.getElementById("passwordError");
+        passwordError.classList.toggle("d-none", this.value.length >= 6);
+    });
+</script>
 {% endblock %}
