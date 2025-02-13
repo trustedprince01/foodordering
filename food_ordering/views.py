@@ -129,8 +129,11 @@ def user_login(request):
         form = AuthenticationForm(data=request.POST)
         if form.is_valid():
             user = form.get_user()
+            print(f"✅ User {user.username} logged in!")  # Debug
             login(request, user)
-            return redirect("home")
+            return redirect("menu")
+        else:
+            print("❌ Invalid username or password")  # Debug
     else:
         form = AuthenticationForm()
     return render(request, "food_ordering/login.html", {"form": form})
