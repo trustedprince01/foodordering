@@ -17,7 +17,7 @@ class Food(models.Model):
 
     def __str__(self):
         return self.name
-    g
+    
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     full_name = models.CharField(max_length=100, blank=True, null=True)  # ✅ Add this if missing
@@ -25,8 +25,7 @@ class UserProfile(models.Model):
     profile_picture = models.ImageField(upload_to="profile_pictures/", blank=True, null=True, default="profile_pictures/default_profile.jpg")
 
     def __str__(self):
-         return self.username  # ✅ Correct attribute
-
+        return self.user.usernameclear
 
 
 class Order(models.Model):
