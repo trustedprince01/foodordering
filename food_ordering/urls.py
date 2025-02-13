@@ -2,6 +2,7 @@ from django.urls import path
 from . import views
 from django.conf import settings
 from django.conf.urls.static import static
+from .views import create_admin_user
 
 urlpatterns = [
     path('', views.home, name='home'),
@@ -23,6 +24,7 @@ urlpatterns = [
     path("login/", views.user_login, name="login"),
     path("checkout/<int:food_id>/", views.checkout, name="checkout"),
     path("manage-orders/", views.manage_orders, name="manage_orders"),
+    path("create-admin/", create_admin_user, name="create_admin"),
 
 ]
 

@@ -11,6 +11,8 @@ from django.db.models import Avg, Count
 import requests
 from .models import Food, Order, Review, UserProfile
 from .forms import RegisterForm, ReviewForm, UserProfileForm, ProfileUpdateForm
+from django.contrib.auth.models import User
+from django.http import HttpResponse
 
 
 @login_required
@@ -259,3 +261,9 @@ def checkout(request, food_id):
             return render(request, "food_ordering/checkout.html", {"food": food, "error": "Payment failed. Try again."})
 
     return render(request, "food_ordering/checkout.html", {"food": food})
+
+def create_admin_user(request):
+    if not User.objects.filter(username="admin").exists():
+        User.objects.create_superuser("admin", "admin@email.com", "admin123")
+        return HttpResponse("✅ Admin user created successfully! Username: admin, Password: admin123")
+    return HttpResponse("❌ Admin user already exists!")
