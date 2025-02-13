@@ -1,0 +1,70 @@
+.fixed-image {
+    width: 100%;         /* ✅ Image takes full card width */
+    height: 200px;       /* ✅ Fixed height for uniformity */
+    object-fit: cover;   /* ✅ Crops image to fit without distortion */
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+}
+
+
+/* 🔥 Center Card */
+.card {
+    border-radius: 8px;
+    padding: 20px;
+}
+
+/* 🔥 Password Toggle */
+.toggle-password {
+    position: absolute;
+    right: 10px;
+    top: 37px;
+    cursor: pointer;
+}
+
+
+
+/* 🔥 Hero Section */
+.hero-section {
+    background: url("OnlineFoodOrderingSystem/static/images/banner.png") no-repeat center center;
+    background-size: cover;
+    height: 350px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    position: relative;
+}
+
+.hero-section .overlay {
+    background: rgba(0, 0, 0, 0.6);
+    padding: 50px;
+    width: 100%;
+}
+
+.hero-section h1 {
+    font-weight: bold;
+}
+
+/* 🔥 Sidebar */
+aside .card {
+    background: #f8f9fa;
+    padding: 10px;
+    border-radius: 8px;
+}
+
+aside .card-title {
+    font-weight: bold;
+}
+
+/* 🔥 Popular Dishes */
+.fixed-image {
+    height: 200px;
+    object-fit: cover;
+}
+
+/* 🔥 Newsletter */
+.newsletter-section {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 10px;
+}
