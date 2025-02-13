@@ -7,7 +7,7 @@ class Food(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField()
     price = models.DecimalField(max_digits=6, decimal_places=2)
-    category = models.CharField(  # ✅ Ensure this exists
+    category = models.CharField(
         max_length=50,
         choices=[("Veg", "Veg"), ("Non-Veg", "Non-Veg")],
         default="Veg"
@@ -20,13 +20,12 @@ class Food(models.Model):
     
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    full_name = models.CharField(max_length=100, blank=True, null=True)  # ✅ Add this if missing
-    phone = models.CharField(max_length=15, blank=True, null=True)  # ✅ Add this if missing
+    full_name = models.CharField(max_length=100, blank=True, null=True)
+    phone = models.CharField(max_length=15, blank=True, null=True)
     profile_picture = models.ImageField(upload_to="profile_pictures/", blank=True, null=True, default="profile_pictures/default_profile.jpg")
 
     def __str__(self):
-        return self.user.usernameclear
-
+        return self.user.username  # ✅ FIXED HERE
 
 class Order(models.Model):
     STATUS_CHOICES = [
@@ -49,13 +48,12 @@ class Order(models.Model):
         return f"{self.user.username} - {self.food.name} ({self.status})"
 
     def save(self, *args, **kwargs):
-        """Override save method but disable email sending for now"""
-        if self.pk:  # Check if the order already exists
+        if self.pk:
             original = Order.objects.get(pk=self.pk)
             if original.status != self.status:
-                print(f"✅ Order status changed: {original.status} → {self.status}")  # Debugging
-                # self.send_status_email()  # ❌ Disable email sending
-        super().save(*args, **kwargs)  # ✅ Correct indentation
+                print(f"✅ Order status changed: {original.status} → {self.status}")
+                # self.send_status_email()  # Enable this if you want email notifications
+        super().save(*args, **kwargs)
 
     def send_status_email(self):
         """Send an email when the order status is updated"""
@@ -72,7 +70,6 @@ class Order(models.Model):
         """
         send_mail(subject, message, settings.EMAIL_HOST_USER, [self.user.email])
 
-
 class Review(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     food = models.ForeignKey(Food, related_name="reviews", on_delete=models.CASCADE)
@@ -82,4 +79,3 @@ class Review(models.Model):
 
     class Meta:
         unique_together = ("user", "food")  # Prevent duplicate reviews
-
