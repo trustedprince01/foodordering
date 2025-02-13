@@ -32,7 +32,7 @@ SECRET_KEY = 'django-insecure-9zkexpg)%iy@z87z9aah@@^d81@y4*8$!+$#kj_)40qmkp@bp#
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['your-render-url.onrender.com', 'localhost', '127.0.0.1',]
+ALLOWED_HOSTS = ["foodordering-rwp7.onrender.com", "127.0.0.1", "localhost"]
 
 # Application definition
 
