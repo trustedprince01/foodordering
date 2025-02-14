@@ -16,10 +16,9 @@ from django.shortcuts import redirect
 from decouple import config
 import os
 import dj_database_url
-import cloudinary 
+import cloudinary
 import cloudinary.uploader
 import cloudinary.api
-import cloudinary.storage
 
 
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
@@ -56,6 +55,7 @@ INSTALLED_APPS = [
     'food_ordering',
     'cloudinary',
     'cloudinary_storage',
+
 ]
 
 
@@ -189,8 +189,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_URL = '/login/'
 
-MEDIA_URL = "/media/"
-
 
 MEDIA_URL = "/media/"  # ✅ This keeps profile images working
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
@@ -205,6 +203,14 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
 
 
 
+cloudinary.config( 
+    cloud_name = os.getenv("decwpzzbg"), 
+    api_key = os.getenv("824589722915937"), 
+    api_secret = os.getenv("ZODfjPV1-1zHiZCXypBXJiCqfmY"), 
+    secure=True  # Ensures HTTPS for images
+)
+
+# Cloudinary storage settings
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': os.getenv('decwpzzbg'),
     'API_KEY': os.getenv('824589722915937'),
@@ -212,10 +218,5 @@ CLOUDINARY_STORAGE = {
 }
 
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-
-
-CSRF_TRUSTED_ORIGINS = [
-    'https://render.com/'  # ✅ Replace with your actual domain
-]
 
 
