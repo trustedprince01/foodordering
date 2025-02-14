@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.conf import settings
+from cloudinary.models import CloudinaryField
 
 class Food(models.Model):
     name = models.CharField(max_length=100)
@@ -13,8 +14,8 @@ class Food(models.Model):
         default="Veg"
     )
     available = models.BooleanField(default=True)  
-    image = models.ImageField(upload_to="food_images/", blank=True, null=True)
-
+    image = CloudinaryField('image', blank=True, null=True)  # ✅ Cloud Storage!
+    
     def __str__(self):
         return self.name
     

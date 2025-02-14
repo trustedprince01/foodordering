@@ -16,7 +16,9 @@ from django.shortcuts import redirect
 from decouple import config
 import os
 import dj_database_url
-
+import cloudinary 
+import cloudinary.uploader
+import cloudinary.api
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -44,6 +46,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'food_ordering',
+    'cloudinary',
+    'cloudinary_storage',
 ]
 
 
@@ -191,6 +195,14 @@ FOOD_IMAGES_ROOT = os.path.join(BASE_DIR, "food_images")
 STATIC_URL = "/static/"
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
 
+
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': 'decwpzzbg',  # Replace with your Cloud Name
+    'API_KEY': '824589722915937',        # Replace with your API Key
+    'API_SECRET': 'ZODfjPV1-1zHiZCXypBXJiCqfmY'   # Replace with your API Secret
+}
+
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 
 
