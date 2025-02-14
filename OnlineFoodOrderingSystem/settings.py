@@ -204,17 +204,18 @@ STATIC_URL = "/static/"
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
 
 
+
 CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': 'decwpzzbg',  # Replace with your Cloud Name
-    'API_KEY': '824589722915937',        # Replace with your API Key
-    'API_SECRET': 'ZODfjPV1-1zHiZCXypBXJiCqfmY',  # Replace with your API Secret
+    'CLOUD_NAME': os.getenv('decwpzzbg'),
+    'API_KEY': os.getenv('824589722915937'),
+    'API_SECRET': os.getenv('ZODfjPV1-1zHiZCXypBXJiCqfmY'),
 }
 
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 
 CSRF_TRUSTED_ORIGINS = [
-    'https://foodordering-rwp7.onrender.com/'  # ✅ Replace with your actual domain
+    'https://render.com/'  # ✅ Replace with your actual domain
 ]
 
 
