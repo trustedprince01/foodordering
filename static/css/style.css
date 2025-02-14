@@ -25,7 +25,7 @@
 
 /* 🔥 Hero Section */
 .hero-section {
-    background: url("OnlineFoodOrderingSystem/static/images/banner.png") no-repeat center center;
+    background: url("static/images/banner.png") no-repeat center center;
     background-size: cover;
     height: 350px;
     display: flex;
