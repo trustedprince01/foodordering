@@ -13,12 +13,12 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 from pathlib import Path
 from django.contrib import messages
 from django.shortcuts import redirect
-from decouple import config
 import os
 import dj_database_url
 import cloudinary
 import cloudinary.uploader
 import cloudinary.api
+from decouple import config
 
 
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
@@ -202,21 +202,18 @@ STATIC_URL = "/static/"
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
 
 
-
-cloudinary.config( 
-    cloud_name = os.getenv("decwpzzbg"), 
-    api_key = os.getenv("824589722915937"), 
-    api_secret = os.getenv("ZODfjPV1-1zHiZCXypBXJiCqfmY"), 
-    secure=True  # Ensures HTTPS for images
-)
-
-# Cloudinary storage settings
+# ✅ Correct Cloudinary Configuration
 CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': os.getenv('decwpzzbg'),
-    'API_KEY': os.getenv('824589722915937'),
-    'API_SECRET': os.getenv('ZODfjPV1-1zHiZCXypBXJiCqfmY'),
+    'CLOUD_NAME': config('CLOUDINARY_CLOUD_NAME'),  # ✅ Use correct env variable
+    'API_KEY': config('CLOUDINARY_API_KEY'),
+    'API_SECRET': config('CLOUDINARY_API_SECRET'),
 }
 
+cloudinary.config( 
+    cloud_name=CLOUDINARY_STORAGE['CLOUD_NAME'], 
+    api_key=CLOUDINARY_STORAGE['API_KEY'], 
+    api_secret=CLOUDINARY_STORAGE['API_SECRET'], 
+    secure=True
+)
+
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-
-

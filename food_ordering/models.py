@@ -14,8 +14,8 @@ class Food(models.Model):
         default="Veg"
     )
     available = models.BooleanField(default=True)  
-    image = CloudinaryField('image', blank=True, null=True)  # ✅ Cloud Storage!
-    
+    image = CloudinaryField('image', blank=True, null=True)  # ✅ Cloudinary storage
+
     def __str__(self):
         return self.name
     
