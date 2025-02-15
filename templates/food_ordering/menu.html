@@ -6,6 +6,15 @@
 {% block content %}
 <h2 class="text-center">Our Menu</h2>
 
+<!-- 🔹 Admin-Only "Add Food" Button -->
+{% if user.is_staff %}
+    <div class="text-end mb-3">
+        <a href="{% url 'admin:food_ordering_food_add' %}" class="btn btn-primary">
+            ➕ Add Food Item
+        </a>
+    </div>
+{% endif %}
+
 <!-- 🔹 SEARCH & FILTER FORM -->
 <form method="GET" class="d-flex mb-4">
     <input type="text" name="q" class="form-control" placeholder="Search food..." value="{{ request.GET.q }}">
@@ -19,17 +28,16 @@
     <button type="submit" class="btn btn-primary">Search</button>
 </form>
 
-
 <!-- 🔹 FOOD ITEMS -->
-<div class="row row-cols-1 row-cols-md-4 g-4">
+<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-3">
     {% for food in foods %}
     <div class="col">
         <div class="card shadow-sm h-100">
             {% if food.image %}
             <img src="{{ food.image.url }}" class="card-img-top fixed-image" alt="{{ food.name }}">
             {% else %}
-             <img src="/static/images/default_food.jpg" class="card-img-top fixed-image" alt="Default Food Image">
-                {% endif %}
+            <img src="/static/images/default_food.jpg" class="card-img-top fixed-image" alt="Default Food Image">
+            {% endif %}
             <div class="card-body text-center">
                 <h5 class="card-title">{{ food.name }}</h5>
                 <p class="text-muted">{{ food.description }}</p>
@@ -38,14 +46,13 @@
                 <p class="text-muted">
                     ⭐ Average Rating:
                     {% if food.reviews.all %}
-                        {{ food.reviews.all|length }} reviews -
-                        {{ food.reviews.aggregate_avg.rating|default:"No ratings yet" }} ⭐
+                        {{ food.reviews.all|length }} reviews - {{ food.reviews.aggregate_avg.rating|default:"No ratings yet" }} ⭐
                     {% else %}
                         No reviews yet
                     {% endif %}
                 </p>
 
-                <!-- 🛒 New Order Button → Leads to Checkout -->
+                <!-- 🛒 Order Button -->
                 <a href="{% url 'checkout' food.id %}" class="btn btn-success">Order Now & Pay</a>
             </div>
         </div>
