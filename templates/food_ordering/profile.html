@@ -61,13 +61,13 @@ alt="Profile Picture">
     function uploadProfilePicture() {
         let fileInput = document.getElementById("profilePicInput");
         let file = fileInput.files[0];
-        
+    
         if (!file) return; // No file selected
-
+    
         let formData = new FormData();
         formData.append("profile_picture", file);
         formData.append("csrfmiddlewaretoken", "{{ csrf_token }}");
-
+    
         fetch("{% url 'update_profile_picture' %}", {
             method: "POST",
             body: formData
@@ -75,7 +75,7 @@ alt="Profile Picture">
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                location.reload(); // Refresh page to show new picture
+                document.querySelector("img.rounded-circle").src = data.image_url; // ✅ Update the profile picture instantly
             } else {
                 alert("Error updating profile picture.");
             }

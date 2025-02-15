@@ -13,6 +13,8 @@ from .models import Food, Order, Review, UserProfile
 from .forms import RegisterForm, ReviewForm, UserProfileForm, ProfileUpdateForm
 from django.contrib.auth.models import User
 from django.http import HttpResponse
+import cloudinary.uploader
+from django.views.decorators.csrf import csrf_exempt
 
 
 @login_required
@@ -203,14 +205,23 @@ def submit_review(request, food_id):
         form = ReviewForm(instance=existing_review)
     return render(request, "food_ordering/review_form.html", {"form": form, "food": food})
 
+@csrf_exempt  # Allow AJAX requests
 @login_required
 def update_profile_picture(request):
     if request.method == "POST" and request.FILES.get("profile_picture"):
-        user_profile = UserProfile.objects.get(user=request.user)
-        user_profile.profile_picture = request.FILES["profile_picture"]
-        user_profile.save()
-        return JsonResponse({"success": True})
-    return JsonResponse({"success": False, "error": "No image uploaded"})
+        user_profile = request.user.userprofile
+        uploaded_file = request.FILES["profile_picture"]
+
+        # ✅ Upload image to Cloudinary
+        upload_result = cloudinary.uploader.upload(uploaded_file)
+
+        if upload_result.get("secure_url"):
+            user_profile.profile_picture = upload_result["secure_url"]  # Save Cloudinary URL
+            user_profile.save()
+            return JsonResponse({"success": True, "image_url": upload_result["secure_url"]})
+
+    return JsonResponse({"success": False, "error": "Upload failed"})
+
 
 def login_user(request):  # ✅ Make sure this exists in views.py
     if request.method == "POST":
