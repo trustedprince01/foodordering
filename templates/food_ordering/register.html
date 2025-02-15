@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load static %}
+{% load static %}  <!-- ✅ Load static at the top -->
 
 {% block title %}Register{% endblock %}
 
@@ -20,7 +20,19 @@
         <!-- 🔹 Registration Form -->
         <form method="post" id="registerForm">
             {% csrf_token %}
-            
+
+            <!-- 🔹 First Name Field -->
+            <div class="mb-3">
+                <label class="form-label">First Name</label>
+                <input type="text" name="first_name" class="form-control" placeholder="Enter first name" required>
+            </div>
+
+            <!-- 🔹 Last Name Field -->
+            <div class="mb-3">
+                <label class="form-label">Last Name</label>
+                <input type="text" name="last_name" class="form-control" placeholder="Enter last name" required>
+            </div>
+
             <!-- 🔹 Username Field -->
             <div class="mb-3">
                 <label class="form-label">Username</label>
@@ -33,19 +45,16 @@
                 <input type="email" name="email" class="form-control" placeholder="Enter email" required>
             </div>
 
-            <!-- 🔹 Password Field with Eye Icon -->
+            <!-- 🔹 Password Field -->
             <div class="mb-3 position-relative">
-                <label class="form-label">Password</label>
+                <label class="form-label">Password <span class="toggle-password" onclick="togglePassword()">👁️</span> </label>
                 <input type="password" name="password1" id="password" class="form-control" placeholder="Create password" required>
-                <span class="toggle-password" onclick="togglePassword()">
-                    <img src="{% static 'images/eye-icon.png' %}" alt="Show" width="20">
-                </span>
                 <div id="password-error" class="text-danger mt-1"></div>
             </div>
 
             <!-- 🔹 Confirm Password Field -->
             <div class="mb-3">
-                <label class="form-label">Confirm Password</label>
+                <label class="form-label">Confirm Password </label>
                 <input type="password" name="password2" id="confirmPassword" class="form-control" placeholder="Confirm password" required>
                 <div id="confirm-password-error" class="text-danger mt-1"></div>
             </div>

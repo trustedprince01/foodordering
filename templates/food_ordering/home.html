@@ -5,12 +5,11 @@
 
 {% block content %}
 
-
 <!-- 🔥 Hero Section -->
-<header class="hero-section text-center">
-    <div class="overlay">
-        <h1 class="display-4 text-white">Delicious Meals, Delivered Fast! 🍕🍔</h1>
-        <p class="text-white">Order from your favorite restaurants & get it delivered to your doorstep.</p>
+<header class="hero-section text-center bg-dark text-white py-5">
+    <div class="container">
+        <h1 class="display-4">Delicious Meals, Delivered Fast! 🍕🍔</h1>
+        <p>Order from your favorite restaurants & get it delivered to your doorstep.</p>
         <a href="{% url 'menu' %}" class="btn btn-lg btn-warning">📜 View Menu</a>
     </div>
 </header>
@@ -41,7 +40,12 @@
                 {% for food in foods %}
                 <div class="col">
                     <div class="card shadow-sm h-100">
-                        <img src="{% static 'images/banner.png' %}" alt="Banner">
+                        {% if food.image %}
+                            <img src="{{ food.image.url }}" class="card-img-top" alt="{{ food.name }}">
+                        {% else %}
+                            <img src="{% static 'images/default_food.jpg' %}" class="card-img-top" alt="Default Food Image">
+                        {% endif %}
+                        <div class="card-body text-center">
                             <h5 class="card-title">{{ food.name }}</h5>
                             <p class="fw-bold text-danger">${{ food.price }}</p>
                             <a href="{% url 'order_food' food.id %}" class="btn btn-success">Order Now</a>
@@ -57,12 +61,12 @@
 </div>
 
 <!-- 🔥 Newsletter Form -->
-<section class="newsletter-section text-center mt-5">
+<section class="newsletter-section text-center mt-5 bg-light py-4">
     <h3>📩 Subscribe for Exclusive Offers</h3>
     <p>Get updates on the best deals and new arrivals!</p>
-    <form method="POST" class="d-flex justify-content-center">
+    <form method="POST" class="d-flex justify-content-center flex-column flex-md-row">
         {% csrf_token %}
-        <input type="email" name="email" class="form-control w-25 me-2" placeholder="Enter your email" required>
+        <input type="email" name="email" class="form-control w-100 w-md-50 me-2" placeholder="Enter your email" required>
         <button type="submit" class="btn btn-primary">Subscribe</button>
     </form>
 </section>

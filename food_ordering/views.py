@@ -15,6 +15,9 @@ from django.contrib.auth.models import User
 from django.http import HttpResponse
 import cloudinary.uploader
 from django.views.decorators.csrf import csrf_exempt
+from food_ordering.models import UserProfile
+from django.db import IntegrityError
+
 
 
 @login_required
@@ -117,14 +120,41 @@ def home(request):
 
 def register(request):
     if request.method == "POST":
-        form = RegisterForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            login(request, user)
-            return redirect("home")
-    else:
-        form = RegisterForm()
-    return render(request, "food_ordering/register.html", {"form": form})
+        first_name = request.POST["first_name"]
+        last_name = request.POST["last_name"]
+        username = request.POST["username"]
+        email = request.POST["email"]
+        password = request.POST["password1"]
+
+        full_name = f"{first_name} {last_name}"  # ✅ Combine first & last name
+
+        # ✅ Check if username already exists
+        if User.objects.filter(username=username).exists():
+            messages.error(request, "❌ Username is already taken. Please choose another.")
+            return redirect("register")
+        
+        if User.objects.filter(email=email).exists():
+            messages.error(request, "❌ Email is already taken. Please choose another.")
+            return redirect("register")
+
+        try:
+            # ✅ Create User & Save First & Last Name
+            user = User.objects.create_user(username=username, email=email, password=password)
+            user.first_name = first_name
+            user.last_name = last_name
+            user.save()
+
+            # ✅ Create UserProfile & Store Full Name
+            UserProfile.objects.create(user=user, full_name=full_name)
+
+            messages.success(request, "✅ Registration successful! You can now log in.")
+            return redirect("login")  # Redirect to login after successful registration
+
+        except IntegrityError:
+            messages.error(request, "❌ An error occurred during registration. Try again.")
+            return redirect("register")
+
+    return render(request, "food_ordering/register.html")
 
 def user_login(request):
     if request.method == "POST":
