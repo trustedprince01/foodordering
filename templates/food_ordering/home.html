@@ -41,8 +41,7 @@
                 {% for food in foods %}
                 <div class="col">
                     <div class="card shadow-sm h-100">
-                        <img src="{% static 'images/banner.png' %}" class="card-img-top fixed-image" alt="{{ food.name }}"
-                        onerror="this.src='{{ STATIC_URL }}images/default_food.jpg'">
+                        <img src="{% static 'images/banner.png' %}" alt="Banner">
                             <h5 class="card-title">{{ food.name }}</h5>
                             <p class="fw-bold text-danger">${{ food.price }}</p>
                             <a href="{% url 'order_food' food.id %}" class="btn btn-success">Order Now</a>
