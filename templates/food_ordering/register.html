@@ -59,6 +59,21 @@
                 <div id="confirm-password-error" class="text-danger mt-1"></div>
             </div>
 
+            <div class="mb-3">
+                <label class="form-label">Security Question</label>
+                <select name="security_question" class="form-control" required>
+                    <option value="What is your pet's name?">What is your pet's name?</option>
+                    <option value="What is your mother's maiden name?">What is your mother's maiden name?</option>
+                    <option value="What city were you born in?">What city were you born in?</option>
+                </select>
+            </div>
+            
+            <div class="mb-3">
+                <label class="form-label">Security Answer</label>
+                <input type="text" name="security_answer" class="form-control" placeholder="Enter answer" required>
+            </div>
+            
+
             <button type="submit" class="btn btn-primary w-100 mt-2">Register</button>
         </form>
 

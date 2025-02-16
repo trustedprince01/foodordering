@@ -135,31 +135,16 @@ PAYSTACK_SECRET_KEY = "sk_test_a380dda6a29099c572c9a3c5034425240036c5ee"
 PAYSTACK_VERIFY_URL = "https://api.paystack.co/transaction/verify/"
 
 
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
-
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = "smtp.office365.com"
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = "your_email@outlook.com"  # Replace with your Outlook email
-EMAIL_HOST_PASSWORD = "your_password"  # Your Outlook email password
+EMAIL_HOST_USER = 'chibuzorprince68@gmail.com'  # Replace with your email
+EMAIL_HOST_PASSWORD = '@soulhacker123'  # Use an App Password, NOT your real password!
 
 
-
-#EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-#EMAIL_HOST = config("EMAIL_HOST", default="smtp.gmail.com")
-#EMAIL_PORT = config("EMAIL_PORT", default=587, cast=int)
-#EMAIL_HOST_USER = config("EMAIL_HOST_USER", default="chibuzorprince68@gmail.com")
-#EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD", default="wflk gjiq vair nlra")  # Use App Password
-#EMAIL_USE_TLS = config("EMAIL_USE_TLS", default=True, cast=bool)
-#EMAIL_USE_SSL = config("EMAIL_USE_SSL", default=False, cast=bool)
-
-# Admin email notifications
-#ADMIN_USER_NAME = config("ADMIN_USER_NAME", default="Admin User")
-#ADMIN_USER_EMAIL = config("ADMIN_USER_EMAIL", default="admin@example.com")
-
-#ADMINS = [(ADMIN_USER_NAME, ADMIN_USER_EMAIL)]
-#MANAGERS = ADMINS
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/

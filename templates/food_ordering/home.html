@@ -41,9 +41,9 @@
                 <div class="col">
                     <div class="card shadow-sm h-100">
                         {% if food.image %}
-                            <img src="{{ food.image.url }}" class="card-img-top" alt="{{ food.name }}">
+                            <img src="{{ food.image.url }}" srcset="{{ food.image.url }} 1x, {{ food.image.url|add:'@2x' }} 2x" class="card-img-top" alt="{{ food.name }}">
                         {% else %}
-                            <img src="{% static 'images/default_food.jpg' %}" class="card-img-top" alt="Default Food Image">
+                            <img src="{% static 'images/banner.jpg' %}" srcset="{% static 'images/banner-480w.jpg' %} 480w, {% static 'images/banner-800w.jpg' %} 800w, {% static 'images/banner.jpg' %} 1200w" sizes="(max-width: 600px) 480px, (max-width: 900px) 800px, 1200px" class="card-img-top" alt="Default Food Image">
                         {% endif %}
                         <div class="card-body text-center">
                             <h5 class="card-title">{{ food.name }}</h5>

@@ -18,8 +18,6 @@ from django.views.decorators.csrf import csrf_exempt
 from food_ordering.models import UserProfile
 from django.db import IntegrityError
 
-
-
 @login_required
 def cancel_order(request, order_id):
     order = get_object_or_404(Order, id=order_id, user=request.user)
@@ -145,7 +143,11 @@ def register(request):
             user.save()
 
             # ✅ Create UserProfile & Store Full Name
-            UserProfile.objects.create(user=user, full_name=full_name)
+            UserProfile.objects.create(
+            user=user,
+            full_name=full_name,
+            
+        )
 
             messages.success(request, "✅ Registration successful! You can now log in.")
             return redirect("login")  # Redirect to login after successful registration
@@ -311,3 +313,5 @@ def create_admin_user(request):
         User.objects.create_superuser("admin", "admin@email.com", "admin123")
         return HttpResponse("✅ Admin user created successfully! Username: admin, Password: admin123")
     return HttpResponse("❌ Admin user already exists!")
+
+
