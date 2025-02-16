@@ -2,45 +2,88 @@
 {% block title %}Manage Orders{% endblock %}
 
 {% block content %}
-<h2 class="text-center">Manage Orders</h2>
+<div class="container">
+    <h2 class="text-center mb-4">📦 Manage Orders</h2>
 
-<table class="table table-striped shadow-sm">
-    <thead class="table-dark">
-        <tr>
-            <th>User</th>
-            <th>Food Item</th>
-            <th>Quantity</th>
-            <th>Total Price</th>
-            <th>Status</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for order in orders %}
-        <tr>
-            <td>{{ order.user.username }}</td>
-            <td>{{ order.food.name }}</td>
-            <td>{{ order.quantity }}</td>
-            <td class="fw-bold">${{ order.total_price }}</td>
-            <td>
-                <span class="badge 
-                    {% if order.status == 'Pending' %}bg-warning
-                    {% elif order.status == 'In Progress' %}bg-info
-                    {% elif order.status == 'Completed' %}bg-success
-                    {% elif order.status == 'Cancelled' %}bg-danger
-                    {% endif %}">
-                    {{ order.status }}
-                </span>
-            </td>
-            <td>
-                <a href="{% url 'update_order_status' order.id 'In Progress' %}" class="btn btn-primary btn-sm">In Progress</a>
-                <a href="{% url 'update_order_status' order.id 'Completed' %}" class="btn btn-success btn-sm">Complete</a>
-                <a href="{% url 'cancel_order' order.id %}" class="btn btn-danger btn-sm">Cancel</a>
-            </td>
-        </tr>
-        {% empty %}
-        <tr><td colspan="6" class="text-center">No orders found.</td></tr>
-        {% endfor %}
-    </tbody>
-</table>
+    {% if orders %}
+        <div class="d-none d-md-block">
+            <!-- ✅ Desktop View (Table) -->
+            <table class="table table-striped shadow-sm text-center">
+                <thead class="table-dark">
+                    <tr>
+                        <th>User</th>
+                        <th>Food Item</th>
+                        <th>Quantity</th>
+                        <th>Total Price</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in orders %}
+                    <tr>
+                        <td>{{ order.user.username }}</td>
+                        <td>{{ order.food.name }}</td>
+                        <td>{{ order.quantity }}</td>
+                        <td class="fw-bold text-danger">${{ order.total_price }}</td>
+                        <td>
+                            <span class="badge 
+                                {% if order.status == 'Pending' %} bg-warning
+                                {% elif order.status == 'In Progress' %} bg-info
+                                {% elif order.status == 'Completed' %} bg-success
+                                {% elif order.status == 'Cancelled' %} bg-danger
+                                {% endif %}">
+                                {{ order.status }}
+                            </span>
+                        </td>
+                        <td>
+                            <a href="{% url 'update_order_status' order.id 'In Progress' %}" class="btn btn-primary btn-sm">In Progress</a>
+                            <a href="{% url 'update_order_status' order.id 'Completed' %}" class="btn btn-success btn-sm">Complete</a>
+                            <a href="{% url 'cancel_order' order.id %}" class="btn btn-danger btn-sm">Cancel</a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="6" class="text-center">No orders found.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- ✅ Mobile View (Cards) -->
+        <div class="d-md-none">
+            {% for order in orders %}
+            <div class="card mb-3 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">{{ order.food.name }}</h5>
+                    <p><strong>User:</strong> {{ order.user.username }}</p>
+                    <p><strong>Quantity:</strong> {{ order.quantity }}</p>
+                    <p class="fw-bold text-danger"><strong>Total:</strong> ${{ order.total_price }}</p>
+                    <p>
+                        <strong>Status:</strong> 
+                        <span class="badge 
+                            {% if order.status == 'Pending' %} bg-warning
+                            {% elif order.status == 'In Progress' %} bg-info
+                            {% elif order.status == 'Completed' %} bg-success
+                            {% elif order.status == 'Cancelled' %} bg-danger
+                            {% endif %}">
+                            {{ order.status }}
+                        </span>
+                    </p>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'update_order_status' order.id 'In Progress' %}" class="btn btn-primary btn-sm">In Progress</a>
+                        <a href="{% url 'update_order_status' order.id 'Completed' %}" class="btn btn-success btn-sm">Complete</a>
+                        <a href="{% url 'cancel_order' order.id %}" class="btn btn-danger btn-sm">Cancel</a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <p class="text-center">No orders found.</p>
+            {% endfor %}
+        </div>
+
+    {% else %}
+        <p class="text-center">No orders found.</p>
+    {% endif %}
+</div>
 {% endblock %}
