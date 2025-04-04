@@ -95,8 +95,9 @@ WSGI_APPLICATION = 'OnlineFoodOrderingSystem.wsgi.application'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 DATABASES = {
-    'default': dj_database_url.config(default='sqlite:///db.sqlite3')  # Change this on Render
+    'default': dj_database_url.config(default=config("DATABASE_URL"))
 }
+
 
 def admin_login_redirect(get_response):
     def middleware(request):
