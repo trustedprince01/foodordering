@@ -1,2 +1,0 @@
-web: gunicorn OnlineFoodOrderingSystem.wsgi --log-file -
-web: gunicorn a_core.wsgi
