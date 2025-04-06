@@ -39,8 +39,10 @@ DEBUG = True
 ALLOWED_HOSTS = [
     'localhost',  
     '127.0.0.1',  
-    'foodordering-rwp7.onrender.com'  # ✅ Replace this with your Render domain
+    'foodordering-productions.up.railway.app' 
 ]
+
+CSRF_TRUSTED_ORIGINS = ['https://foodordering-productions.up.railway.app']
 
 
 # Application definition
@@ -94,10 +96,13 @@ WSGI_APPLICATION = 'OnlineFoodOrderingSystem.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-DATABASES = {
-    'default': dj_database_url.config(default=config("DATABASE_URL"))
-}
+ENVIRONMENT = os.getenv('ENVIRONMENT', 'development')  # or config('ENVIRONMENT', default='development')
+POSTGRES_LOCALLY = True
 
+if ENVIRONMENT == 'production' or POSTGRES_LOCALLY:
+    DATABASES = {
+        'default': dj_database_url.parse(config('DATABASE_URL'))
+    }
 
 def admin_login_redirect(get_response):
     def middleware(request):
